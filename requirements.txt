@@ -1,7 +1,5 @@
-pickle
 pandas 
 streamlit  
-urllib.request
 bs4  
 numpy
 sklearn
