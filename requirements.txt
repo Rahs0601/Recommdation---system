@@ -4,5 +4,4 @@ streamlit
 urllib.request
 bs4  
 numpy
-spotipy
 sklearn

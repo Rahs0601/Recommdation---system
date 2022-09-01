@@ -4,8 +4,6 @@ import streamlit as st
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
 import numpy as np
-import spotipy
-from spotipy.oauth2 import SpotifyClientCredentials
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
@@ -82,6 +80,7 @@ def recommend_anime(title):
 
 
 #Books
+@st.experimental_memo
 def recommend_books(title):
     idx = np.where(books_pt.index == title)[0][0]
     sim_scores = list(enumerate(books_similarity[idx]))
@@ -96,6 +95,7 @@ def recommend_books(title):
     return recd_books, recd_books_poster
 
 # Movies
+@st.experimental_memo
 def recommend_movies(title):
     idx = movies[movies['title'] == title].index[0]
     sim_scores = list(enumerate(movies_similarity[idx]))
@@ -111,10 +111,12 @@ def recommend_movies(title):
 
 #Music
 
-def fetching_music_poster(song_name):
-    sp.search(q=song_name, type='track')
-    url = sp.search(q=song_name, type='track')['tracks']['items'][0]['album']['images'][0]['url']
-    return url
+def fetch_music_poster (music_id):
+    htmldata = urlopen(f'https://open.spotify.com/track/{music_id}')
+    soup = BeautifulSoup(htmldata,'html.parser')
+    images = soup.find('img')
+    link = images['src']
+    return link
 
 @st.experimental_memo
 def recommend_music(song_name):
@@ -127,16 +129,9 @@ def recommend_music(song_name):
     recd_music_poster = []
     for i in song_indices:
         recd_music.append(music.iloc[i]['song_name'])
-        recd_music_poster.append(fetching_music_poster(music.iloc[i]['song_name']))
+        recd_music_poster.append(fetch_music_poster(music.iloc[i]['id']))
     return recd_music, recd_music_poster
 
-if "Select" not in st.session_state:
-    st.session_state.button_clicked = False
-
-
-def callback():
-    # Button was clicked!
-    st.session_state.button_clicked = True
 
 
 st.title("Welcome to Recommendation System By Rah's")
@@ -159,7 +154,7 @@ if selection == 'Anime':
     display(recommend_anime, recommend_anime_poster)
 
 elif selection == 'Books':
-    books = pickle.load(open('books.pkl', 'rb'))
+    books = pd.read_csv('books_.csv')
     books = pd.DataFrame(books)
     books_pt = pickle.load(open('books_pt.pkl', 'rb'))
     books_pt = pd.DataFrame(books_pt)
@@ -185,8 +180,6 @@ elif selection == 'Movies':
     display(recommend_movies, recommend_movies_poster)
 
 elif selection == 'Music':
-    sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id="fe6b07ee1b0e4481876512cb332425aa",
-                                                           client_secret="a6a46012ac3e41af83a85f09d628c7d1"))
     music_dict = pickle.load(open('music.pkl', 'rb'))
     music = pd.DataFrame(music_dict)
     music_similarity = pickle.load(open('Music_similarity.pkl', 'rb'))
