@@ -182,7 +182,7 @@ elif selection == 'Movies':
 elif selection == 'Music':
     music_dict = pickle.load(open('music.pkl', 'rb'))
     music = pd.DataFrame(music_dict)
-    music_similarity = pickle.load(open('Music_similarity.pkl', 'rb'))
+    music_similarity = pickle.load(open('music_similarity.pkl', 'rb'))
     Music = st.selectbox(
         'select a music you like', music['song_name'].values)
 
