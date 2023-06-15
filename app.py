@@ -62,7 +62,7 @@ def fetching_poster_anime(anime_id):
     link = images[1]['data-src']
     return link
 
-@st.experimental_memo
+@st.cache_data
 def recommend_anime(title):
     idx = anime[anime['name'] == title].index[0]
     sim_scores = list(enumerate(anime_similarity[idx]))
@@ -80,7 +80,7 @@ def recommend_anime(title):
 
 
 #Books
-@st.experimental_memo
+@st.cache_data
 def recommend_books(title):
     idx = np.where(books_pt.index == title)[0][0]
     sim_scores = list(enumerate(books_similarity[idx]))
@@ -95,7 +95,7 @@ def recommend_books(title):
     return recd_books, recd_books_poster
 
 # Movies
-@st.experimental_memo
+@st.cache_data
 def recommend_movies(title):
     idx = movies[movies['title'] == title].index[0]
     sim_scores = list(enumerate(movies_similarity[idx]))
@@ -118,7 +118,7 @@ def fetch_music_poster (music_id):
     link = images['src']
     return link
 
-@st.experimental_memo
+@st.cache_data
 def recommend_music(song_name):
     index = music[music['song_name'] == song_name].index[0]
     sim_scores = list(enumerate(music_similarity[index]))
